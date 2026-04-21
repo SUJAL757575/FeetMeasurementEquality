@@ -38,21 +38,28 @@ public class FeetMeasurementEquality {
             this.unit = unit;
         }
 
-        // 🔄 Convert to base
         private double toFeet() {
             return unit.toFeet(value);
         }
 
-        // ➕ Add two quantities
+        // ➕ UC6 (old method - optional)
         public Quantity add(Quantity other) {
+            return add(other, this.unit);
+        }
+
+        // ➕ UC7 (NEW method with target unit)
+        public Quantity add(Quantity other, LengthUnit targetUnit) {
             if (other == null) {
                 throw new IllegalArgumentException("Other quantity cannot be null");
             }
+            if (targetUnit == null) {
+                throw new IllegalArgumentException("Target unit cannot be null");
+            }
 
-            double sumInFeet = this.toFeet() + other.toFeet();   // Step 1: normalize
-            double resultValue = this.unit.fromFeet(sumInFeet);  // Step 2: convert to own unit
+            double sumFeet = this.toFeet() + other.toFeet();        // Step 1: base
+            double result = targetUnit.fromFeet(sumFeet);           // Step 2: convert
 
-            return new Quantity(resultValue, this.unit);
+            return new Quantity(result, targetUnit);
         }
 
         @Override
@@ -67,18 +74,13 @@ public class FeetMeasurementEquality {
         Quantity q1 = new Quantity(1.0, LengthUnit.FEET);
         Quantity q2 = new Quantity(12.0, LengthUnit.INCH);
 
-        Quantity result1 = q1.add(q2);
-        System.out.println("1 ft + 12 inch = " + result1);
+        System.out.println("Result in FEET: " + q1.add(q2, LengthUnit.FEET));
+        System.out.println("Result in INCH: " + q1.add(q2, LengthUnit.INCH));
+        System.out.println("Result in YARD: " + q1.add(q2, LengthUnit.YARD));
 
-        Quantity q3 = new Quantity(12.0, LengthUnit.INCH);
-        Quantity q4 = new Quantity(1.0, LengthUnit.FEET);
+        Quantity q3 = new Quantity(2.54, LengthUnit.CENTIMETER);
+        Quantity q4 = new Quantity(1.0, LengthUnit.INCH);
 
-        Quantity result2 = q3.add(q4);
-        System.out.println("12 inch + 1 ft = " + result2);
-
-        Quantity q5 = new Quantity(1.0, LengthUnit.YARD);
-        Quantity q6 = new Quantity(3.0, LengthUnit.FEET);
-
-        System.out.println("1 yard + 3 ft = " + q5.add(q6));
+        System.out.println("Result in CM: " + q3.add(q4, LengthUnit.CENTIMETER));
     }
 }
